@@ -16,27 +16,13 @@
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* 0: ANSI qwerty */
-    LAYOUT(F(0),   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,  KC_EQL,  KC_NO,   KC_BSPC, \
+    LAYOUT(F(2),   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,  KC_EQL,  KC_NO,   KC_BSPC, \
           KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,  KC_RBRC, KC_BSLS,       \
           KC_CAPS,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,  KC_NO,   KC_ENT ,       \
           KC_LSFT,   KC_NO,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,           KC_RSFT, KC_NO, \
           KC_LCTL,   KC_LGUI, KC_LALT,                   KC_FN0,                    KC_RALT, KC_FN0,  KC_FN1,  KC_RCTL),
 
-/* 1: Fn layer (FN0)
-UG = Underglow = RGB Backlighting
-BL = Backlighting = In-Switch LED
-┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-│GRAVE│ F1  │ F2  │ F3  │ F4  │ F5  │ F6  │ F7  │ F8  │ F9  │ F10 │ F11 │ F12 │▒▒▒▒▒│     │
-├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│     │     │ Up  │     │     │     │     │     │PGUP │PGDWN│PRTSC│SCLCK│PAUSE│     │█████│
-├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│     │Left │Down │Right│     │     │     │     │     │     │     │     │▒▒▒▒▒│     │█████│
-├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│     │     │UGTOG│UGMOD│UGHUI│UGHUD│UGSAI│UGSAD│     │BLDEC│BLTOG│BLINC│▒▒▒▒▒│     │▒▒▒▒▒│
-├─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┼─────┤
-│     │     │     │█████│█████│█████│     │█████│█████│█████│     │     │     │     │█████│
-└─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
-*/
+/* 1: Fn layer (FN0) */
     LAYOUT(
         KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NO, KC_NO, \
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_UP,   KC_NO, KC_PSCR, KC_SLCK, KC_PAUS, KC_NO,       \
@@ -44,11 +30,9 @@ BL = Backlighting = In-Switch LED
         KC_NO, KC_NO, KC_MEDIA_PREV_TRACK, KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,           KC_NO, KC_NO, \
         KC_NO, KC_NO, KC_NO,                   KC_NO,                   KC_NO, KC_NO, KC_NO, KC_NO),
 
-/* 2: lighting layer (FN1)
-
-*/
+/* 2: lighting layer (FN1) */
   LAYOUT(
-        KC_TILD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, \
+        KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, \
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
         KC_NO, KC_NO, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, KC_NO, BL_DEC,  BL_TOGG, BL_INC,           KC_NO, KC_NO, \
@@ -60,18 +44,19 @@ BL = Backlighting = In-Switch LED
 const uint16_t PROGMEM fn_actions[] = {
     [0] = ACTION_LAYER_TAP_KEY(1, KC_SPACE),    // make space do double duty as FN (to layer 1)
     [1] = ACTION_LAYER_MOMENTARY(2),            // PN key to layer 2
+    [2] = ACTION_FUNCTION(2),
 };
 
 
 /* esc = esc, shift esc = tilde
 this is called on default layer, FN layer will just produce a grave */
 #define MODS_SHIFT_MASK   (MOD_BIT(KC_LSFT)|MOD_BIT(KC_RSFT))
-/*
+
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
   static uint8_t shift_pressed;
 
   switch(id) {
-    case 0: // ESC key
+    case 2: // ESC key
       shift_pressed = get_mods() & MODS_SHIFT_MASK;
 
       if (record->event.pressed) { // key is going down
@@ -79,7 +64,7 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
           add_key(KC_ESC);
           send_keyboard_report();
         } else {
-          add_key(KC_TILD);
+          add_key(KC_GRV);
           send_keyboard_report();
         }
       } else { // key is being released
@@ -87,7 +72,7 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
           del_key(KC_ESC);
           send_keyboard_report();
         } else {
-          del_key(KC_TILD);
+          del_key(KC_GRV);
           send_keyboard_report();
         }
       }
@@ -95,4 +80,3 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
       break;
   }
 }
-*/
