@@ -4,6 +4,14 @@
 #define MPR KC_MEDIA_PREV_TRACK
 #define MPN KC_MEDIA_NEXT_TRACK
 
+#define RGB_ST RGB_M_P // static
+#define RGB_BR RGB_M_B // breathing
+#define RGB_RB RGB_M_R // rainbow
+#define RGB_SW RGB_M_SW // swirl
+#define RGB_SN RGB_M_SN // snake
+#define RGB_KN RGB_M_K // knight rider
+#define RGB_TE RGB_M_T // RGB test
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* 0: ANSI qwerty */
   LAYOUT(
@@ -24,8 +32,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* 2: lighting layer (FN1) */
   LAYOUT(
     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, \
-    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
-    KC_TRNS, KC_NO, RGB_VAI, RGB_VAD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
+    KC_NO, RGB_ST, RGB_BR, RGB_RB, RGB_SW, RGB_SN, RGB_KN, RGB_TE, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
+    KC_TRNS, KC_NO, KC_NO, RGB_VAI, RGB_VAD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
     KC_TRNS, KC_NO, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           KC_TRNS, KC_NO, \
     KC_TRNS, KC_TRNS, KC_TRNS,                   KC_NO,                   KC_TRNS, KC_NO, KC_NO, KC_TRNS),
 };
