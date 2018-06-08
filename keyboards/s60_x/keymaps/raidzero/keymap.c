@@ -25,7 +25,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   LAYOUT(
     KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NO, KC_DEL, \
     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_UP,   KC_NO, KC_PSCR, KC_SLCK, KC_PAUS, KC_NO,       \
-    KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_NO, KC_NO, KC_NO, KC_NO,       \
+    KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_NO, KC_NO, KC_NO, KC_NO,       \
     KC_TRNS, KC_NO, MPR, MPP, MPN, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,           KC_TRNS, KC_NO, \
     KC_TRNS, KC_TRNS, KC_TRNS,                   KC_NO,                   KC_TRNS, KC_NO, KC_NO, KC_TRNS),
 
@@ -50,7 +50,8 @@ void matrix_init_user(void) {
 
 /* esc = esc, shift esc = tilde
 this is called on default layer, FN layer will just produce a grave */
-#define MODS_SHIFT_MASK   (MOD_BIT(KC_LSFT)|MOD_BIT(KC_RSFT))
+#define MODS_SHIFT_MASK   (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT))
+#define MODS_SHIFTS_MASK   (MOD_BIT(KC_LSFT) & MOD_BIT(KC_RSFT))
 
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
   static uint8_t shift_pressed;
@@ -79,4 +80,34 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
 
       break;
   }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  uint8_t rshift_pressed;
+  uint8_t lshift_pressed;
+
+  switch (keycode) {
+    case KC_MINS: // RESET EEPROM
+      rshift_pressed = get_mods() & (MOD_BIT(KC_RSFT));
+      lshift_pressed = get_mods() & (MOD_BIT(KC_LSFT));
+
+      if (rshift_pressed && lshift_pressed && record->event.pressed) {
+        eeconfig_init();
+        return false;
+      }
+      break;
+    case KC_EQL: // BOOTLOADER
+      // TODO: figure out how to make MODS_SHIFT_MASK work
+      rshift_pressed = get_mods() & (MOD_BIT(KC_RSFT));
+      lshift_pressed = get_mods() & (MOD_BIT(KC_LSFT));
+
+      if (rshift_pressed && lshift_pressed && record->event.pressed) {
+        reset_keyboard();
+        return false;
+      }
+
+      break;
+  }
+
+  return true;
 }
