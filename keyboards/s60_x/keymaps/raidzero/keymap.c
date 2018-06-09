@@ -30,10 +30,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   LAYOUT(
     x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, \
     x_____x, RGB_ST, RGB_BR, RGB_RB, RGB_SW, RGB_SN, RGB_KN, RGB_TE, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
-    _______, x_____x, x_____x, RGB_VAI, RGB_VAD, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    _______, RGB_RCT, x_____x, RGB_VAI, RGB_VAD, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
     _______, x_____x, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           _______, x_____x, \
     _______, _______, _______,                   x_____x,                   _______, x_____x, x_____x, _______),
 };
+
+// a place to keep references to all the RGB LEDs
+static rgbled rgbs[RGBLED_NUM];
+static bool rgb_react_enabled = false;
 
 void matrix_init_user(void) {
   breathing_disable();
@@ -42,10 +46,24 @@ void matrix_init_user(void) {
   if (get_backlight_level() == 0) {
     backlight_level(BACKLIGHT_LEVELS); // max backlight
   }
+
+  // init the rgbs array
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled *led = &rgbs[i];
+    led->on = true;
+  }
 }
 
 /* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (rgb_react_enabled) {
+    if (record->event.pressed) {
+      rgblight_disable();
+    } else {
+      rgblight_enable();
+    }
+  }
+
   switch (keycode) {
     case KC_MINS: // RESET EEPROM
       if (RSHIFT_HELD && LSHIFT_HELD && record->event.pressed) {
@@ -62,6 +80,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
 
+      break;
+   case RGB_RCT:
+      if (record->event.pressed) {
+        rgb_react_enabled = !rgb_react_enabled;
+        return false;
+      }
       break;
   }
 

@@ -34,3 +34,13 @@
 #define LSHIFT_HELD       (get_mods() & (MOD_BIT(KC_LSFT)))
 #define SHIFT_HELD        (get_mods() & (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)))
 
+enum my_keycodes {
+  RGB_RCT = SAFE_RANGE, // toggle RGB reactive mode
+};
+
+typedef struct {
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+  bool on;
+} rgbled;
