@@ -1,107 +1,63 @@
 #include QMK_KEYBOARD_H
-
-#define MPP KC_MEDIA_PLAY_PAUSE
-#define MPR KC_MEDIA_PREV_TRACK
-#define MPN KC_MEDIA_NEXT_TRACK
-
-#define RGB_ST RGB_M_P // static
-#define RGB_BR RGB_M_B // breathing
-#define RGB_RB RGB_M_R // rainbow
-#define RGB_SW RGB_M_SW // swirl
-#define RGB_SN RGB_M_SN // snake
-#define RGB_KN RGB_M_K // knight rider
-#define RGB_TE RGB_M_T // RGB test
+#include "keymap.h"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-/* 0: ANSI qwerty */
+/* 0: ANSI qwerty  (spacefn) */
   LAYOUT(
-    F(2),   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,  KC_EQL,  KC_NO,   KC_BSPC, \
+    KC_GESC,   KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,  KC_EQL,  x_____x,   KC_BSPC, \
     KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,  KC_RBRC, KC_BSLS,       \
-    KC_LGUI,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,  KC_NO,   KC_ENT ,       \
-    KC_LSFT,   KC_NO,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,           KC_RSFT, KC_NO, \
-    KC_LCTL,   KC_LGUI, KC_LALT,                   KC_FN0,                    KC_RALT, KC_FN0,  KC_FN1,  KC_RCTL),
+    KC_LGUI,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,  x_____x,   KC_ENT ,       \
+    KC_LSFT,   x_____x,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,           KC_RSFT, x_____x, \
+    KC_LCTL,   KC_LGUI, KC_LALT,                   SPCFN ,                    KC_RALT, MO(2),  MO(3),  KC_RCTL),
 
-/* 1: Fn layer (FN0) */
+/* 1: ASNI qwerty, no spacefn */
   LAYOUT(
-    KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NO, KC_DEL, \
-    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_UP,   KC_NO, KC_PSCR, KC_SLCK, KC_PAUS, KC_NO,       \
-    KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_DOWN, KC_RIGHT, KC_NO, KC_NO, KC_NO, KC_NO,       \
-    KC_TRNS, KC_NO, MPR, MPP, MPN, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,           KC_TRNS, KC_NO, \
-    KC_TRNS, KC_TRNS, KC_TRNS,                   KC_NO,                   KC_TRNS, KC_NO, KC_NO, KC_TRNS),
+    _______,   _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,  _______,  _______,  _______,   _______, \
+    _______,   _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,  _______,  _______,  _______,       \
+    _______,   _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,  _______,  _______,  _______ ,       \
+    _______,   _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,    _______,  _______,  _______, _______, \
+    _______,   _______, _______,                   KC_SPC,                    _______, MO(2),  MO(3),  _______),
 
-/* 2: lighting layer (FN1) */
+/* 2: Fn layer (FN0) */
   LAYOUT(
-    KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, \
-    KC_NO, RGB_ST, RGB_BR, RGB_RB, RGB_SW, RGB_SN, RGB_KN, RGB_TE, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
-    KC_TRNS, KC_NO, KC_NO, RGB_VAI, RGB_VAD, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,       \
-    KC_TRNS, KC_NO, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           KC_TRNS, KC_NO, \
-    KC_TRNS, KC_TRNS, KC_TRNS,                   KC_NO,                   KC_TRNS, KC_NO, KC_NO, KC_TRNS),
-};
+    KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  x_____x, KC_DEL, \
+    x_____x, MS_LCLK, MS_UP, MS_RCLK, x_____x, x_____x, x_____x, x_____x, KC_UP,   x_____x, KC_PSCR, KC_SLCK, KC_PAUS, x_____x,       \
+    KC_CAPS, MS_LEFT, MS_DOWN, MS_RGHT, x_____x, x_____x, x_____x, KC_LEFT, KC_DOWN, KC_RIGHT, x_____x, x_____x, x_____x, x_____x,       \
+    _______, x_____x, MPR, MPP, MPN, VUP, VDN, x_____x, x_____x, x_____x, x_____x, x_____x,           _______, x_____x, \
+    _______, _______, _______,                   TG(1),                   _______, x_____x, x_____x, _______),
 
-const uint16_t PROGMEM fn_actions[] = {
-  [0] = ACTION_LAYER_TAP_KEY(1, KC_SPACE),    // make space do double duty as FN (to layer 1)
-  [1] = ACTION_LAYER_MOMENTARY(2),            // PN key to layer 2
-  [2] = ACTION_FUNCTION(2),                   // ESC handling for grave and tilde
+/* 3: lighting layer (FN1) */
+  LAYOUT(
+    x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, \
+    x_____x, RGB_ST, RGB_BR, RGB_RB, RGB_SW, RGB_SN, RGB_KN, RGB_TE, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    _______, x_____x, x_____x, RGB_VAI, RGB_VAD, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    _______, x_____x, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           _______, x_____x, \
+    _______, _______, _______,                   x_____x,                   _______, x_____x, x_____x, _______),
 };
 
 void matrix_init_user(void) {
   breathing_disable();
-}
 
-/* esc = esc, shift esc = tilde
-this is called on default layer, FN layer will just produce a grave */
-#define MODS_SHIFT_MASK   (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT))
-#define MODS_SHIFTS_MASK   (MOD_BIT(KC_LSFT) & MOD_BIT(KC_RSFT))
-
-void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
-  static uint8_t shift_pressed;
-
-  switch(id) {
-    case 2: // ESC key
-      shift_pressed = get_mods() & MODS_SHIFT_MASK;
-
-      if (record->event.pressed) { // key is going down
-        if (!shift_pressed) {
-          add_key(KC_ESC);
-          send_keyboard_report();
-        } else {
-          add_key(KC_GRV);
-          send_keyboard_report();
-        }
-      } else { // key is being released
-         if (!shift_pressed) {
-          del_key(KC_ESC);
-          send_keyboard_report();
-        } else {
-          del_key(KC_GRV);
-          send_keyboard_report();
-        }
-      }
-
-      break;
+  // if backlight was off, turn it on. (otherwise just leave it as it was)
+  if (get_backlight_level() == 0) {
+    backlight_level(BACKLIGHT_LEVELS); // max backlight
   }
 }
 
+/* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  uint8_t rshift_pressed;
-  uint8_t lshift_pressed;
-
   switch (keycode) {
     case KC_MINS: // RESET EEPROM
-      rshift_pressed = get_mods() & (MOD_BIT(KC_RSFT));
-      lshift_pressed = get_mods() & (MOD_BIT(KC_LSFT));
-
-      if (rshift_pressed && lshift_pressed && record->event.pressed) {
+      if (RSHIFT_HELD && LSHIFT_HELD && record->event.pressed) {
+        rgblight_disable(); // turn off rgb for some visual feedback
+        backlight_level(0); // more visual feedback. no backlight
         eeconfig_init();
         return false;
       }
       break;
     case KC_EQL: // BOOTLOADER
-      // TODO: figure out how to make MODS_SHIFT_MASK work
-      rshift_pressed = get_mods() & (MOD_BIT(KC_RSFT));
-      lshift_pressed = get_mods() & (MOD_BIT(KC_LSFT));
-
-      if (rshift_pressed && lshift_pressed && record->event.pressed) {
+      if (RSHIFT_HELD && LSHIFT_HELD && record->event.pressed) {
+        backlight_level(0); // disable backlight for visual feedback
         reset_keyboard();
         return false;
       }
