@@ -32,6 +32,11 @@
 #define MS_RGHT   KC_MS_RIGHT
 #define MS_LCLK   KC_MS_BTN1
 #define MS_RCLK   KC_MS_BTN2
+#define MS_WHDN   KC_MS_WH_DOWN
+#define MS_WHUP   KC_MS_WH_UP
+#define MS_WHRT   KC_MS_WH_RIGHT
+#define MS_WHLT   KC_MS_WH_LEFT
+
 
 /* detect modifiers */
 #define RSHIFT_HELD       (get_mods() & (MOD_BIT(KC_RSFT)))
