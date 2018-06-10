@@ -1,9 +1,13 @@
+
+#include QMK_KEYBOARD_H
+
 /* keymap beautifiers */
 #define _______ KC_TRNS
 #define x_____x KC_NO
 
 /* almighty spaceFN */
 #define SPCFN LT(2, KC_SPACE)
+#define CAPS MT(MOD_LGUI, KC_CAPS)
 
 /* media keys */
 #define MPP KC_MEDIA_PLAY_PAUSE

@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "keymap.h"
+extern rgblight_config_t rgblight_config;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* 0: ANSI qwerty  (spacefn) */
@@ -36,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // a place to keep references to all the RGB LEDs
-static rgbled rgbs[RGBLED_NUM];
+//static rgbled rgbs[RGBLED_NUM];
 static bool rgb_react_enabled = false;
 
 void matrix_init_user(void) {
@@ -46,21 +47,31 @@ void matrix_init_user(void) {
   if (get_backlight_level() == 0) {
     backlight_level(BACKLIGHT_LEVELS); // max backlight
   }
-
-  // init the rgbs array
-  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
-    rgbled *led = &rgbs[i];
-    led->on = true;
-  }
 }
+
+uint8_t orig_rgb_mode = 255;
+
+uint8_t orig_hue = 0;
+uint8_t orig_sat = 0;
+uint8_t orig_val = 0;
+
+bool was_rgb_enabled = true;
 
 /* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
   if (rgb_react_enabled) {
     if (record->event.pressed) {
-      rgblight_disable();
-    } else {
       rgblight_enable();
+      rgblight_mode(1);
+      rgblight_sethsv(rand() % 360, 255, 255);
+    } else {
+      rgblight_sethsv(orig_hue, orig_sat, orig_val);
+      rgblight_mode(orig_rgb_mode);
+
+      if (!was_rgb_enabled) {
+        rgblight_disable();
+      }
     }
   }
 
@@ -83,7 +94,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
    case RGB_RCT:
       if (record->event.pressed) {
+        // save original RGB mode
+        orig_rgb_mode = rgblight_config.mode;
+        was_rgb_enabled = rgblight_config.enable;
+
+        orig_hue = rgblight_config.hue;
+        orig_sat = rgblight_config.sat;
+        orig_val = rgblight_config.val;
+
         rgb_react_enabled = !rgb_react_enabled;
+
+        if (!rgb_react_enabled) {
+
+          if (!was_rgb_enabled) {
+            rgblight_disable();
+          } else {
+            // set original mode back when disabling reactive mode
+            rgblight_mode(orig_rgb_mode);
+          }
+        }
+
         return false;
       }
       break;
