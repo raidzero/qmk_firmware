@@ -31,14 +31,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   LAYOUT(
     x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, \
     x_____x, RGB_ST, RGB_BR, RGB_RB, RGB_SW, RGB_SN, RGB_KN, RGB_TE, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
-    _______, RGB_RCT, x_____x, RGB_VAI, RGB_VAD, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    _______, RGB_RCT, RGB_VAI, RGB_VAD, RGB_FAD, RGB_ALL, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
     _______, x_____x, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           _______, x_____x, \
     _______, _______, _______,                   x_____x,                   _______, x_____x, x_____x, _______),
 };
 
+// this controls all the reactive rgb bools (start with reactive mode enabled)
+uint8_t RGB_FLAGS = LIGHT_RANDOM_LEDS;
+
 // a place to keep references to all the RGB LEDs
 static rgbled rgbs[RGBLED_NUM];
-static bool rgb_react_enabled = false;
+
+// a timer for controlling RGB fadeout
+uint16_t rgb_fade_timer = 0;
 
 void matrix_init_user(void) {
   breathing_disable();
@@ -51,58 +56,31 @@ void matrix_init_user(void) {
   // set saturation & value to max values in case they were turned down
   rgblight_config.sat=255;
   rgblight_config.val=255;
-
-  // init rgbs array
-  for (int i = 0; i < RGBLED_NUM; i++) {
-    rgbled* led = &rgbs[i];
-    led->on = false;
-  }
 }
 
 void matrix_scan_user(void) {
-  if (rgb_react_enabled) {
-    fadeLeds();
+  if (RGB_FLAGS & RGB_REACTIVE_ENABLED) {
     set_leds();
+
+    if (RGB_FLAGS & RGB_FADE_OUT) {
+      fadeLeds();
+    }
   }
 }
 
 uint8_t orig_rgb_mode = 255;
 
-uint8_t orig_hue = 0;
-uint8_t orig_sat = 0;
-uint8_t orig_val = 0;
-
-bool was_rgb_enabled = true;
-
-bool lightRandomLeds = true;
-bool lightAllLeds = false;
-bool fadeOut = true;
-bool allLedsOff = false;
-
-
-uint16_t timer = 0;
-
 /* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  if (rgb_react_enabled) {
+  if (RGB_FLAGS & RGB_REACTIVE_ENABLED) {
     if (record->event.pressed) {
-      if (lightRandomLeds) {
-        light_leds_random_color(rand() % RGBLED_NUM);
-      } else if (lightAllLeds) {
+      if (RGB_FLAGS & LIGHT_ALL_LEDS) {
         light_all_leds(rand() % 360);
+      } else if (RGB_FLAGS & LIGHT_RANDOM_LEDS) {
+        light_leds_random_color(rand() % RGBLED_NUM);
       }
-    } else {
-    /*
-      if (!was_rgb_enabled) {
-        rgblight_disable();
-      } else {
-        rgblight_sethsv(orig_hue, orig_sat, orig_val);
-        rgblight_mode(orig_rgb_mode);
-      }
-      */
     }
-
   }
 
   switch (keycode) {
@@ -126,17 +104,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         // save original RGB mode
         orig_rgb_mode = rgblight_config.mode;
-        was_rgb_enabled = rgblight_config.enable;
+        if (rgblight_config.enable) {
+          flip_rgb_bit_on(RGB_WAS_ENABLED);
+        } else {
+          flip_rgb_bit_off(RGB_WAS_ENABLED);
+        }
 
-        orig_hue = rgblight_config.hue;
-        orig_sat = rgblight_config.sat;
-        orig_val = rgblight_config.val;
+        flip_rgb_bit(RGB_REACTIVE_ENABLED);
 
-        rgb_react_enabled = !rgb_react_enabled;
-
-        if (!rgb_react_enabled) {
-
-          if (!was_rgb_enabled) {
+        if (RGB_FLAGS & RGB_REACTIVE_ENABLED) {
+          if (!(RGB_FLAGS & RGB_WAS_ENABLED)) {
             rgblight_disable();
           } else {
             // set original mode back when disabling reactive mode
@@ -147,14 +124,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
       break;
+    case RGB_FAD:
+      if (record->event.pressed) {
+        flip_rgb_bit(RGB_FADE_OUT);
+        return false;
+      }
+      break;
+    case RGB_ALL:
+      if (record->event.pressed) {
+        flip_rgb_bit(LIGHT_ALL_LEDS);
+        return false;
+      }
+      break;
   }
 
   return true;
 }
 
+// lights the given number of random LEDs in a random color
 void light_leds_random_color(uint8_t numberOfLeds) {
   rgblight_enable();
   rgblight_mode(1);
+
+  turn_off_all_leds();
 
   for (int i = 0; i < numberOfLeds; i++) {
     uint8_t ledIndex = rand() % RGBLED_NUM;
@@ -163,7 +155,7 @@ void light_leds_random_color(uint8_t numberOfLeds) {
     int hue = rand() & 360;
     rgblight_sethsv_at(hue, 255, 255, ledIndex);
 
-    timer = timer_read();
+    rgb_fade_timer = timer_read();
 
     led->index = ledIndex;
     led->h = hue;
@@ -172,22 +164,44 @@ void light_leds_random_color(uint8_t numberOfLeds) {
   }
 }
 
+// light an led at the given index in a random color
 void light_led_random_color(uint8_t ledIndex) {
   rgblight_enable();
   rgblight_mode(1);
 
-  rgblight_sethsv_at(rand() % 360, 255, 255, ledIndex);
+  // first turn off all other leds
+  turn_off_all_leds();
+
+  rgbled* led = &rgbs[ledIndex];
+  led->h = rand() % 360;
 }
 
+// light all leds in the given hue
 void light_all_leds(int hue) {
   rgblight_enable();
   rgblight_mode(1);
 
-  rgblight_sethsv(hue, 255, 255);
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+
+    led->h = hue;
+    led->s = 255;
+    led->v = 255;
+  }
 }
 
+// sets all led values to 0
+void turn_off_all_leds(void) {
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = & rgbs[i];
+
+    led->v = 0;
+  }
+}
+
+// reduce all leds value by 10 every 10 ms
 void fadeLeds(void) {
-  if (timer_elapsed(timer) > 10) {
+  if (timer_elapsed(rgb_fade_timer) > 10) {
     for (int i = 0; i < RGBLED_NUM; i++) {
       rgbled* led = &rgbs[i];
 
@@ -197,22 +211,42 @@ void fadeLeds(void) {
         led->v = 0;
       }
 
-      timer = timer_read();
+      rgb_fade_timer = timer_read();
     }
   }
 }
 
+// updates the actual LEDs with contents of the rgbs array
 void set_leds(void) {
+  uint8_t allLedsOff = 0;
+
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
     rgbled* led = &rgbs[i];
 
     rgblight_sethsv_at(led->h, led->s, led->v, led->index);
 
-    allLedsOff = !led->v;
+    allLedsOff = led->v == 0;
   }
 
-  /*if (allLedsOff) {
-    rgblight_mode(orig_rgb_mode);
+  if (allLedsOff) {
+    //rgblight_mode(orig_rgb_mode);
   }
-  */
+}
+
+
+/* probably unnecessary bit field helper functions */
+void flip_rgb_bit_on(uint8_t bit) {
+  RGB_FLAGS |= bit;
+}
+
+void flip_rgb_bit_off(uint8_t bit) {
+  RGB_FLAGS &= ~bit;
+}
+
+void flip_rgb_bit(uint8_t bit) {
+  if (RGB_FLAGS & bit) {
+    flip_rgb_bit_off(bit);
+  } else {
+    flip_rgb_bit_on(bit);
+  }
 }
