@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // a place to keep references to all the RGB LEDs
-//static rgbled rgbs[RGBLED_NUM];
+static rgbled rgbs[RGBLED_NUM];
 static bool rgb_react_enabled = false;
 
 void matrix_init_user(void) {
@@ -46,6 +46,23 @@ void matrix_init_user(void) {
   // if backlight was off, turn it on. (otherwise just leave it as it was)
   if (get_backlight_level() == 0) {
     backlight_level(BACKLIGHT_LEVELS); // max backlight
+  }
+
+  // set saturation & value to max values in case they were turned down
+  rgblight_config.sat=255;
+  rgblight_config.val=255;
+
+  // init rgbs array
+  for (int i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+    led->on = false;
+  }
+}
+
+void matrix_scan_user(void) {
+  if (rgb_react_enabled) {
+    fadeLeds();
+    set_leds();
   }
 }
 
@@ -57,22 +74,35 @@ uint8_t orig_val = 0;
 
 bool was_rgb_enabled = true;
 
+bool lightRandomLeds = true;
+bool lightAllLeds = false;
+bool fadeOut = true;
+bool allLedsOff = false;
+
+
+uint16_t timer = 0;
+
 /* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   if (rgb_react_enabled) {
     if (record->event.pressed) {
-      rgblight_enable();
-      rgblight_mode(1);
-      rgblight_sethsv(rand() % 360, 255, 255);
+      if (lightRandomLeds) {
+        light_leds_random_color(rand() % RGBLED_NUM);
+      } else if (lightAllLeds) {
+        light_all_leds(rand() % 360);
+      }
     } else {
-      rgblight_sethsv(orig_hue, orig_sat, orig_val);
-      rgblight_mode(orig_rgb_mode);
-
+    /*
       if (!was_rgb_enabled) {
         rgblight_disable();
+      } else {
+        rgblight_sethsv(orig_hue, orig_sat, orig_val);
+        rgblight_mode(orig_rgb_mode);
       }
+      */
     }
+
   }
 
   switch (keycode) {
@@ -120,4 +150,69 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 
   return true;
+}
+
+void light_leds_random_color(uint8_t numberOfLeds) {
+  rgblight_enable();
+  rgblight_mode(1);
+
+  for (int i = 0; i < numberOfLeds; i++) {
+    uint8_t ledIndex = rand() % RGBLED_NUM;
+    rgbled* led = &rgbs[ledIndex];
+
+    int hue = rand() & 360;
+    rgblight_sethsv_at(hue, 255, 255, ledIndex);
+
+    timer = timer_read();
+
+    led->index = ledIndex;
+    led->h = hue;
+    led->s = 255;
+    led->v = 255;
+  }
+}
+
+void light_led_random_color(uint8_t ledIndex) {
+  rgblight_enable();
+  rgblight_mode(1);
+
+  rgblight_sethsv_at(rand() % 360, 255, 255, ledIndex);
+}
+
+void light_all_leds(int hue) {
+  rgblight_enable();
+  rgblight_mode(1);
+
+  rgblight_sethsv(hue, 255, 255);
+}
+
+void fadeLeds(void) {
+  if (timer_elapsed(timer) > 10) {
+    for (int i = 0; i < RGBLED_NUM; i++) {
+      rgbled* led = &rgbs[i];
+
+      if (led->v > 9) {
+        led->v -= 10;
+      } else {
+        led->v = 0;
+      }
+
+      timer = timer_read();
+    }
+  }
+}
+
+void set_leds(void) {
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+
+    rgblight_sethsv_at(led->h, led->s, led->v, led->index);
+
+    allLedsOff = !led->v;
+  }
+
+  /*if (allLedsOff) {
+    rgblight_mode(orig_rgb_mode);
+  }
+  */
 }

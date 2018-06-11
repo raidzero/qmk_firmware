@@ -48,8 +48,17 @@ enum my_keycodes {
 };
 
 typedef struct {
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
+  int h;
+  uint8_t s;
+  uint8_t v;
+  uint8_t index;
   bool on;
 } rgbled;
+
+/* custom functions */
+void light_leds_random_color(uint8_t numberOfLeds); // light up number of random LEDS in random colors
+void light_led_random_color(uint8_t ledIndex); // light up an led at ledIndex in a random color
+void light_all_leds(int hue);
+
+void fadeLeds(void);
+void set_leds(void);
