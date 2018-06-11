@@ -55,6 +55,8 @@ void flip_rgb_bit(uint8_t bit);
 
 enum my_keycodes {
   RGB_RCT = SAFE_RANGE, // toggle RGB reactive mode
+  RGB_FAD,              // toggle RGB reactive fadeout
+  RGB_ALL,              // toggle RGB lighting all LEDs
 };
 
 typedef struct {
@@ -70,5 +72,6 @@ void light_leds_random_color(uint8_t numberOfLeds); // light up number of random
 void light_led_random_color(uint8_t ledIndex); // light up an led at ledIndex in a random color
 void light_all_leds(int hue);
 
+void turn_off_all_leds(void);
 void fadeLeds(void);
 void set_leds(void);
