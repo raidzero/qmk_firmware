@@ -44,6 +44,7 @@ static rgbled rgbs[RGBLED_NUM];
 
 // a timer for controlling RGB fadeout
 uint16_t rgb_fade_timer = 0;
+uint8_t fade_speed = 20; // 20ms steps for fading LEDs
 
 void matrix_init_user(void) {
   breathing_disable();
@@ -201,7 +202,7 @@ void turn_off_all_leds(void) {
 
 // reduce all leds value by 10 every 10 ms
 void fadeLeds(void) {
-  if (timer_elapsed(rgb_fade_timer) > 10) {
+  if (timer_elapsed(rgb_fade_timer) > fade_speed) {
     for (int i = 0; i < RGBLED_NUM; i++) {
       rgbled* led = &rgbs[i];
 
