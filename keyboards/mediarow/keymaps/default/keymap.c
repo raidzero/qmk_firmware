@@ -21,6 +21,11 @@
 #define VUP KC_AUDIO_VOL_UP
 #define VDN KC_AUDIO_VOL_DOWN
 
+/* custom function prototypes */
+
+void dance_right_monitor (qk_tap_dance_state_t *state, void *user_data);
+void dance_all_monitors (qk_tap_dance_state_t *state, void *user_data);
+
 /* custom keycodes to trigger macros */
 enum my_keycodes {
   DM1 = SAFE_RANGE,     // macro to move all desktops to right monitor and disable the others
@@ -34,41 +39,70 @@ enum {
   TD_ALL_MONITORS = 2,
 };
 
+/* tap dance defintions */
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_SHOW_MUSIC] = ACTION_TAP_DANCE_DOUBLE(MPP, LGUI(KC_6)),
+  [TD_RIGHT_MONITOR] = ACTION_TAP_DANCE_FN(dance_right_monitor),
+  [TD_ALL_MONITORS] = ACTION_TAP_DANCE_FN(dance_all_monitors),
+};
+
 /* keymap tap dance shortcuts */
 #define TDP TD(TD_SHOW_MUSIC)
 #define TDN TD(TD_RIGHT_MONITOR)
 #define TDR TD(TD_ALL_MONITORS)
 
-/* tap dance defintions */
-qk_tap_dance_action_t tap_dance_actions[] = {
-  [TD_SHOW_MUSIC] = ACTION_TAP_DANCE_DOUBLE(MPP, LGUI(KC_6)),
-  [TD_RIGHT_MONITOR] = ACTION_TAP_DANCE_DOUBLE(MPN, DM1),
-  [TD_ALL_MONITORS] = ACTION_TAP_DANCE_DOUBLE(MPR, DM3)
-};
+/* tap once, send media next key, tap twice, run right monitor macro */
+void dance_right_monitor (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count >= 2) {
+    SEND_STRING(SS_LGUI(SS_LSFT("d")));
+    _delay_ms(200);
+    SEND_STRING("l" SS_TAP(X_ENTER));
+
+    reset_tap_dance (state);
+  } else {
+    add_key(KC_MEDIA_NEXT_TRACK);
+    send_keyboard_report();
+  }
+}
+
+/* tap once, send media prev key, tap twice, run all monitors macro */
+void dance_all_monitors (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count >= 2) {
+
+    // enable all monitors
+    SEND_STRING(SS_LGUI(SS_LSFT("d")));
+    _delay_ms(200);
+    SEND_STRING("jkl" SS_TAP(X_ENTER));
+    _delay_ms(1000);
+
+    /* move most commonly used desktops to their proper monitors */
+
+    // move virtual desktop one two monitors to the left
+    SEND_STRING(SS_LGUI("1"));
+    SEND_STRING(SS_LGUI(SS_LSFT("[[")));
+    _delay_ms(100);
+
+    // move virtual desktop two one monitor to the left
+    SEND_STRING(SS_LGUI("2"));
+    SEND_STRING(SS_LGUI(SS_LSFT("[")));
+    _delay_ms(100);
+
+    // move virtual desktop three one monitor to the left
+    SEND_STRING(SS_LGUI("3"));
+    SEND_STRING(SS_LGUI(SS_LSFT("[")));
+    _delay_ms(100);
+
+    // focus desktop 6 (if music is playing this will show it)
+    SEND_STRING(SS_LGUI("6"));
+
+    reset_tap_dance (state);
+  } else {
+    add_key(KC_MEDIA_PREV_TRACK);
+    send_keyboard_report();
+  }
+}
 
 /* keymap */
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* default layer*/ LAYOUT( VUP, VDN, TDR, TDP, TDN )
 };
-
-/* macro handling */
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case DM1:
-      if (record->event.pressed) {
-        SEND_STRING(SS_LGUI(SS_LSFT("d")));
-        _delay_ms(200);
-        SEND_STRING("l" SS_TAP(X_ENTER));
-      }
-      return false;
-    case DM3:
-      if (record->event.pressed) {
-        SEND_STRING(SS_LGUI(SS_LSFT("d")));
-        _delay_ms(200);
-        SEND_STRING("jkl" SS_TAP(X_ENTER));
-      }
-      return false;
-  }
-
-  return true;
-}
