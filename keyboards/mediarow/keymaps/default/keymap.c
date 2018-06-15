@@ -23,8 +23,10 @@
 
 /* custom function prototypes */
 
-void dance_right_monitor (qk_tap_dance_state_t *state, void *user_data);
-void dance_all_monitors (qk_tap_dance_state_t *state, void *user_data);
+void dance_right_monitor_finished(qk_tap_dance_state_t *state, void *user_data);
+void dance_right_monitor_reset(qk_tap_dance_state_t *state, void *user_data);
+void dance_all_monitors_finished(qk_tap_dance_state_t *state, void *user_data);
+void dance_all_monitors_reset(qk_tap_dance_state_t *state, void *user_data);
 
 /* custom keycodes to trigger macros */
 enum my_keycodes {
@@ -42,8 +44,8 @@ enum {
 /* tap dance defintions */
 qk_tap_dance_action_t tap_dance_actions[] = {
   [TD_SHOW_MUSIC] = ACTION_TAP_DANCE_DOUBLE(MPP, LGUI(KC_6)),
-  [TD_RIGHT_MONITOR] = ACTION_TAP_DANCE_FN(dance_right_monitor),
-  [TD_ALL_MONITORS] = ACTION_TAP_DANCE_FN(dance_all_monitors),
+  [TD_RIGHT_MONITOR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_right_monitor_finished, dance_right_monitor_reset),
+  [TD_ALL_MONITORS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_all_monitors_finished, dance_all_monitors_reset),
 };
 
 /* keymap tap dance shortcuts */
@@ -52,23 +54,27 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 #define TDR TD(TD_ALL_MONITORS)
 
 /* tap once, send media next key, tap twice, run right monitor macro */
-void dance_right_monitor (qk_tap_dance_state_t *state, void *user_data) {
+void dance_right_monitor_finished(qk_tap_dance_state_t *state, void *user_data) {
   if (state->count >= 2) {
     SEND_STRING(SS_LGUI(SS_LSFT("d")));
     _delay_ms(200);
     SEND_STRING("l" SS_TAP(X_ENTER));
 
-    reset_tap_dance (state);
+    reset_tap_dance(state);
   } else {
-    add_key(KC_MEDIA_NEXT_TRACK);
-    send_keyboard_report();
+    register_code(KC_MEDIA_NEXT_TRACK);
+  }
+}
+
+void dance_right_monitor_reset(qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    unregister_code(KC_MEDIA_NEXT_TRACK);
   }
 }
 
 /* tap once, send media prev key, tap twice, run all monitors macro */
-void dance_all_monitors (qk_tap_dance_state_t *state, void *user_data) {
+void dance_all_monitors_finished(qk_tap_dance_state_t *state, void *user_data) {
   if (state->count >= 2) {
-
     // enable all monitors
     SEND_STRING(SS_LGUI(SS_LSFT("d")));
     _delay_ms(200);
@@ -95,10 +101,15 @@ void dance_all_monitors (qk_tap_dance_state_t *state, void *user_data) {
     // focus desktop 6 (if music is playing this will show it)
     SEND_STRING(SS_LGUI("6"));
 
-    reset_tap_dance (state);
+    reset_tap_dance(state);
   } else {
-    add_key(KC_MEDIA_PREV_TRACK);
-    send_keyboard_report();
+    register_code(KC_MEDIA_PREV_TRACK);
+  }
+}
+
+void dance_all_monitors_reset(qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    unregister_code(KC_MEDIA_PREV_TRACK);
   }
 }
 
