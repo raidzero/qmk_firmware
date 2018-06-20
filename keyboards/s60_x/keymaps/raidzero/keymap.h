@@ -42,36 +42,9 @@
 #define LSHIFT_HELD       (get_mods() & (MOD_BIT(KC_LSFT)))
 #define SHIFT_HELD        (get_mods() & (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)))
 
-/* reactive rgb mode bit field */
-#define RGB_REACTIVE_ENABLED  (1 << 0)
-#define RGB_WAS_ENABLED       (1 << 1)
-#define LIGHT_RANDOM_LEDS     (1 << 2)
-#define LIGHT_ALL_LEDS        (1 << 3)
-#define RGB_FADE_OUT          (1 << 4)
-
-void flip_rgb_bit_on(uint8_t bit);
-void flip_rgb_bit_off(uint8_t bit);
-void flip_rgb_bit(uint8_t bit);
-
 enum my_keycodes {
   RGB_RCT = SAFE_RANGE, // toggle RGB reactive mode
   RGB_FAD,              // toggle RGB reactive fadeout
   RGB_ALL,              // toggle RGB lighting all LEDs
 };
 
-typedef struct {
-  int h;
-  uint8_t s;
-  uint8_t v;
-  uint8_t index;
-  bool on;
-} rgbled;
-
-/* custom functions */
-void light_leds_random_color(uint8_t numberOfLeds); // light up number of random LEDS in random colors
-void light_led_random_color(uint8_t ledIndex); // light up an led at ledIndex in a random color
-void light_all_leds(int hue);
-
-void turn_off_all_leds(void);
-void fadeLeds(void);
-void set_leds(void);
