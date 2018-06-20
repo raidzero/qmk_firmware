@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // this controls all the reactive rgb bools (start with reactive mode enabled)
-uint8_t RGB_FLAGS = LIGHT_RANDOM_LEDS;
+uint8_t RGB_FLAGS =  LIGHT_RANDOM_LEDS | RGB_FADE_OUT;
 
 // a place to keep references to all the RGB LEDs
 static rgbled rgbs[RGBLED_NUM];
@@ -206,7 +206,7 @@ void fadeLeds(void) {
     for (int i = 0; i < RGBLED_NUM; i++) {
       rgbled* led = &rgbs[i];
 
-      if (led->v > 9) {
+      if (led->v >= 10) {
         led->v -= 10;
       } else {
         led->v = 0;
@@ -224,13 +224,15 @@ void set_leds(void) {
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
     rgbled* led = &rgbs[i];
 
-    rgblight_sethsv_at(led->h, led->s, led->v, led->index);
+    if (led->v > 0) {
+      rgblight_sethsv_at(led->h, led->s, led->v, led->index);
+    }
 
     allLedsOff = led->v == 0;
   }
 
   if (allLedsOff) {
-    //rgblight_mode(orig_rgb_mode);
+    rgblight_mode(orig_rgb_mode);
   }
 }
 
