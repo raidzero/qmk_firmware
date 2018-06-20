@@ -34,10 +34,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   LAYOUT(
     x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, \
     x_____x, RGB_ST, RGB_BR, RGB_RB, RGB_SW, RGB_SN, RGB_KN, RGB_TE, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
-    _______, RGB_RCT, RGB_VAI, RGB_VAD, RGB_FAD, RGB_ALL, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    _______, RGB_RCT, RGB_VAI, RGB_VAD, RGB_FAD, RGB_ALL, x_____x, x_____x, x_____x, KC_LOCK, x_____x, x_____x, x_____x, x_____x,       \
     _______, x_____x, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           _______, x_____x, \
     _______, _______, _______,                   x_____x,                   _______, x_____x, x_____x, _______),
 };
+
+
+/* holds keyboard state bit field */
+uint8_t STATE_FLAGS = 0;
 
 void matrix_init_user(void) {
   breathing_disable();
@@ -62,6 +66,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   // make leds do cool stuff when a key is hit
   process_leds(record);
+
+  // lock board?
+  if (keycode == KC_LOCK) {
+    flip_state_bit(STATE_LOCKED);
+  }
+
+  // if board locked?
+  if (STATE_FLAGS & STATE_LOCKED) {
+    return false;
+  }
 
   switch (keycode) {
     case KC_MINS: // RESET EEPROM
@@ -98,7 +112,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
       break;
+    case RGB_TOG:
+      if (record->event.pressed) {
+        process_rgb_toggle();
+      }
+      return true;
   }
 
   return true;
+}
+
+void flip_state_bit(uint8_t bit) {
+  if (STATE_FLAGS & bit) {
+    flip_state_bit_off(bit);
+  } else {
+    flip_state_bit_on(bit);
+  }
+}
+
+void flip_state_bit_on(uint8_t bit) {
+  STATE_FLAGS |= bit;
+}
+
+void flip_state_bit_off(uint8_t bit) {
+  STATE_FLAGS &= ~bit;
 }

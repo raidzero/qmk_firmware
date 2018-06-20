@@ -36,3 +36,4 @@ void scan_leds(void);
 void process_reactive_toggle(void);
 void process_reactive_fade(void);
 void process_reactive_all(void);
+void process_rgb_toggle(void);

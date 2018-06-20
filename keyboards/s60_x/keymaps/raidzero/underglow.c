@@ -2,8 +2,8 @@
 
 extern rgblight_config_t rgblight_config;
 
-// this controls all the reactive rgb bools (start with reactive mode enabled)
-uint8_t RGB_FLAGS =  LIGHT_RANDOM_LEDS | RGB_FADE_OUT;
+// this controls all the reactive rgb bools
+uint8_t RGB_FLAGS = LIGHT_RANDOM_LEDS | RGB_FADE_OUT;
 
 // a place to keep references to all the RGB LEDs
 static rgbled rgbs[RGBLED_NUM];
@@ -63,6 +63,10 @@ void process_reactive_fade() {
 
 void process_reactive_all() {
   flip_rgb_bit(LIGHT_ALL_LEDS);
+}
+
+void process_rgb_toggle() {
+  flip_rgb_bit(RGB_WAS_ENABLED);
 }
 
 // lights the given number of random LEDs in a random color
@@ -154,7 +158,7 @@ void set_leds(void) {
     allLedsOff = led->v == 0;
   }
 
-  if (allLedsOff) {
+  if (allLedsOff && RGB_FLAGS & RGB_WAS_ENABLED) {
     rgblight_mode(orig_rgb_mode);
   }
 }
