@@ -67,16 +67,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // make leds do cool stuff when a key is hit
   process_leds(record);
 
-  // lock board?
-  if (keycode == KC_LOCK) {
-    flip_state_bit(STATE_LOCKED);
-  }
-
-  // if board locked?
-  if (STATE_FLAGS & STATE_LOCKED) {
-    return false;
-  }
-
   switch (keycode) {
     case KC_MINS: // RESET EEPROM
       if (RSHIFT_HELD && LSHIFT_HELD && record->event.pressed) {

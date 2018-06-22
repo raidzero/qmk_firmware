@@ -3,7 +3,7 @@
 extern rgblight_config_t rgblight_config;
 
 // this controls all the reactive rgb bools
-uint8_t RGB_FLAGS = LIGHT_RANDOM_LEDS | RGB_FADE_OUT;
+uint8_t RGB_FLAGS = LIGHT_ALL_LEDS | RGB_FADE_OUT;
 
 // a place to keep references to all the RGB LEDs
 static rgbled rgbs[RGBLED_NUM];
@@ -12,15 +12,15 @@ static rgbled rgbs[RGBLED_NUM];
 uint16_t rgb_fade_timer = 0;
 uint8_t fade_speed = 20; // 20ms steps for fading LEDs
 
-uint8_t orig_rgb_mode = 255;
+uint8_t orig_rgb_mode = 0;
 
 void process_leds(keyrecord_t* record) {
   if (RGB_FLAGS & RGB_REACTIVE_ENABLED) {
     if (record->event.pressed) {
       if (RGB_FLAGS & LIGHT_ALL_LEDS) {
         light_all_leds(rand() % 360);
-      } else if (RGB_FLAGS & LIGHT_RANDOM_LEDS) {
-        light_leds_random_color(rand() % RGBLED_NUM);
+      } else {
+        light_all_leds(999);
       }
     }
   }
@@ -69,52 +69,25 @@ void process_rgb_toggle() {
   flip_rgb_bit(RGB_WAS_ENABLED);
 }
 
-// lights the given number of random LEDs in a random color
-void light_leds_random_color(uint8_t numberOfLeds) {
-  rgblight_enable();
-  rgblight_mode(1);
+void light_led_in_color(uint8_t index, int hue) {
+  rgbled* led = &rgbs[index];
 
-  turn_off_all_leds();
-
-  for (int i = 0; i < numberOfLeds; i++) {
-    uint8_t ledIndex = rand() % RGBLED_NUM;
-    rgbled* led = &rgbs[ledIndex];
-
-    int hue = rand() & 360;
-    rgblight_sethsv_at(hue, 255, 255, ledIndex);
-
-    rgb_fade_timer = timer_read();
-
-    led->index = ledIndex;
-    led->h = hue;
-    led->s = 255;
-    led->v = 255;
-  }
-}
-
-// light an led at the given index in a random color
-void light_led_random_color(uint8_t ledIndex) {
-  rgblight_enable();
-  rgblight_mode(1);
-
-  // first turn off all other leds
-  turn_off_all_leds();
-
-  rgbled* led = &rgbs[ledIndex];
-  led->h = rand() % 360;
+  led->v = 255;
+  led->s = 255;
+  led->h = hue;
 }
 
 // light all leds in the given hue
 void light_all_leds(int hue) {
   rgblight_enable();
-  rgblight_mode(1);
+  rgblight_mode(0);
 
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
-    rgbled* led = &rgbs[i];
-
-    led->h = hue;
-    led->s = 255;
-    led->v = 255;
+    if (hue <= 360) {
+      light_led_in_color(i, hue);
+    } else {
+      light_led_in_color(i, rand() % 360);
+    }
   }
 }
 
@@ -152,7 +125,7 @@ void set_leds(void) {
     rgbled* led = &rgbs[i];
 
     if (led->v > 0) {
-      rgblight_sethsv_at(led->h, led->s, led->v, led->index);
+      rgblight_sethsv_at(led->h, led->s, led->v, i);
     }
 
     allLedsOff = led->v == 0;
@@ -160,6 +133,8 @@ void set_leds(void) {
 
   if (allLedsOff && RGB_FLAGS & RGB_WAS_ENABLED) {
     rgblight_mode(orig_rgb_mode);
+  } else if (allLedsOff && !(RGB_FLAGS & RGB_WAS_ENABLED)) {
+    rgblight_disable();
   }
 }
 
