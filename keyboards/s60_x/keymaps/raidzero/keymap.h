@@ -46,7 +46,13 @@ enum my_keycodes {
   RGB_RCT = SAFE_RANGE, // toggle RGB reactive mode
   RGB_FAD,              // toggle RGB reactive fadeout
   RGB_ALL,              // toggle RGB lighting all LEDs
-  KC_LOCK,                  // toggle locked keyboard mode
+  ANI_STA,               // animation: static color
+  ANI_BRE,              // animation: breathe
+  ANI_SPC,              // animation: spectrum
+  ANI_RNB,              // animation: rainbow
+  ANI_SPI,              // increase animation speed
+  ANI_SPD,              // decreae animation speed
+  KC_LOCK,              // toggle locked keyboard mode
 };
 
 /* bit field for various keyboard state bools */

@@ -1,18 +1,31 @@
 #include "underglow.h"
+#include "animations.h"
 
 extern rgblight_config_t rgblight_config;
 
 // this controls all the reactive rgb bools
-uint8_t RGB_FLAGS = LIGHT_ALL_LEDS | RGB_FADE_OUT;
+uint8_t RGB_FLAGS =  RGB_WAS_ENABLED | LIGHT_ALL_LEDS | RGB_FADE_OUT;
 
 // a place to keep references to all the RGB LEDs
-static rgbled rgbs[RGBLED_NUM];
+rgbled rgbs[RGBLED_NUM];
 
-// a timer for controlling RGB fadeout
-uint16_t rgb_fade_timer = 0;
-uint8_t fade_speed = 20; // 20ms steps for fading LEDs
+// timers for controlling RGB fading
+uint16_t rgb_fade_out_timer = 0;
+uint16_t rgb_fade_in_timer = 0;
+
+uint8_t fade_speed = 10; // 20ms steps for fading LEDs in & out
 
 uint8_t orig_rgb_mode = 0;
+
+void init_leds() {
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+
+    led->h = 0; // start red
+    led->s = 255; // start with full saturation
+    led->v = 255; // start with full brightness
+  }
+}
 
 void process_leds(keyrecord_t* record) {
   if (RGB_FLAGS & RGB_REACTIVE_ENABLED) {
@@ -22,17 +35,22 @@ void process_leds(keyrecord_t* record) {
       } else {
         light_all_leds(999);
       }
+
+      if (RGB_FLAGS & RGB_FADE_OUT) {
+        flip_rgb_bit_on(RGB_FADING_OUT);
+      }
     }
   }
 }
 
 void scan_leds(void) {
-if (RGB_FLAGS & RGB_REACTIVE_ENABLED) {
-    set_leds();
+  scan_animation(); // this will update the rgb leds array
+  set_leds();
 
-    if (RGB_FLAGS & RGB_FADE_OUT) {
-      fadeLeds();
-    }
+  if (RGB_FLAGS & RGB_FADING_OUT) {
+    fade_leds_out();
+  } else if (RGB_FLAGS & RGB_FADING_IN) {
+    fade_leds_in();
   }
 }
 
@@ -101,8 +119,10 @@ void turn_off_all_leds(void) {
 }
 
 // reduce all leds value by 10 every 10 ms
-void fadeLeds(void) {
-  if (timer_elapsed(rgb_fade_timer) > fade_speed) {
+void fade_leds_out(void) {
+  uint8_t allLedsOff = 0;
+
+  if (timer_elapsed(rgb_fade_out_timer) > fade_speed) {
     for (int i = 0; i < RGBLED_NUM; i++) {
       rgbled* led = &rgbs[i];
 
@@ -112,14 +132,66 @@ void fadeLeds(void) {
         led->v = 0;
       }
 
-      rgb_fade_timer = timer_read();
+      allLedsOff = led->v == 0;
     }
+
+    if (allLedsOff) {
+      // all leds are finished fading or otherwise off
+      // flip the fadein bit so scan_leds() knows to call
+      // fade_leds_in()
+      if (RGB_FLAGS & RGB_WAS_ENABLED) {
+        // allow animations to continue
+        flip_rgb_bit_off(ANIM_SUSPEND);
+        flip_rgb_bit_off(RGB_FADING_OUT);
+        flip_rgb_bit_on(RGB_FADING_IN);
+      }
+    } else {
+      // LEDs are fading. suspend animations
+      flip_rgb_bit_on(ANIM_SUSPEND);
+      flip_rgb_bit_on(RGB_FADING_OUT);
+    }
+
+    // update timer
+    rgb_fade_out_timer = timer_read();
+  }
+}
+
+// increase all leds value by 10 every 10 ms
+void fade_leds_in(void) {
+  uint8_t allLedsOn = 0;
+
+  if (timer_elapsed(rgb_fade_in_timer) > fade_speed) {
+    for (int i = 0; i < RGBLED_NUM; i++) {
+      rgbled* led = &rgbs[i];
+
+      if (led->v <= 245) {
+        led->v += 10;
+      } else {
+        led->v = 255;
+      }
+
+      allLedsOn = led->v == 255;
+    }
+
+    if (allLedsOn) {
+      // all leds are finished fading in or otherwise on
+      // allow animations to continue, if RGB was on
+      if (RGB_FLAGS & RGB_WAS_ENABLED) {
+        flip_rgb_bit_off(ANIM_SUSPEND);
+        flip_rgb_bit_off(RGB_FADING_IN);
+      }
+    } else {
+      // LEDs are fading
+      flip_rgb_bit_on(RGB_FADING_IN);
+    }
+
+    // update timer
+    rgb_fade_in_timer = timer_read();
   }
 }
 
 // updates the actual LEDs with contents of the rgbs array
 void set_leds(void) {
-  uint8_t allLedsOff = 0;
 
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
     rgbled* led = &rgbs[i];
@@ -127,14 +199,6 @@ void set_leds(void) {
     if (led->v > 0) {
       rgblight_sethsv_at(led->h, led->s, led->v, i);
     }
-
-    allLedsOff = led->v == 0;
-  }
-
-  if (allLedsOff && RGB_FLAGS & RGB_WAS_ENABLED) {
-    rgblight_mode(orig_rgb_mode);
-  } else if (allLedsOff && !(RGB_FLAGS & RGB_WAS_ENABLED)) {
-    rgblight_disable();
   }
 }
 
