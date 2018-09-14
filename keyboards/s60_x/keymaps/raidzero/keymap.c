@@ -13,7 +13,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC,  KC_RBRC, KC_BSLS,       \
     KC_LGUI,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,  x_____x,   KC_ENT ,       \
     KC_LSFT,   x_____x,   KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,           KC_RSFT, x_____x, \
-    KC_LCTL,   KC_LGUI, KC_LALT,                   SPCFN ,                    KC_RALT, MO(2),  MO(3),  KC_RCTL),
+    KC_LCTL,   KC_LGUI, KC_LALT,                   SPCFN ,                    KC_RALT, MO(2),  MO(3),  MO(2)),
 
 /* 1: ASNI qwerty, no spacefn */
   LAYOUT(
@@ -28,8 +28,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  x_____x, KC_DEL, \
     x_____x, MS_LCLK, MS_UP, MS_RCLK, x_____x, MS_WHUP, x_____x, x_____x, KC_UP,   x_____x, KC_PSCR, KC_SLCK, KC_PAUS, x_____x,       \
     KC_CAPS, MS_LEFT, MS_DOWN, MS_RGHT, MS_WHLT, MS_WHDN, MS_WHRT, KC_LEFT, KC_DOWN, KC_RIGHT, x_____x, x_____x, x_____x, x_____x,       \
-    _______, x_____x, MPR, MPP, MPN, VUP, VDN, x_____x, x_____x, x_____x, x_____x, x_____x,           _______, x_____x, \
-    _______, _______, _______,                   TG(1),                   _______, x_____x, x_____x, _______),
+    _______, x_____x, MPR, MPP, MPN, VUP, VDN, x_____x, x_____x, x_____x, x_____x, KC_UP,           _______, x_____x, \
+    _______, _______, _______,                   TG(1),                   KC_LEFT, KC_DOWN, KC_RIGHT, _______),
 
 /* 3: lighting layer (FN1) */
   LAYOUT(
