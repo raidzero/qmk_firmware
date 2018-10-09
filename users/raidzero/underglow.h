@@ -13,6 +13,7 @@
 void flip_rgb_bit_on(uint8_t bit);
 void flip_rgb_bit_off(uint8_t bit);
 void flip_rgb_bit(uint8_t bit);
+bool is_rgb_bit_on(uint8_t bit);
 
 /* refers to an LED in memory */
 typedef struct {
@@ -21,6 +22,11 @@ typedef struct {
   uint8_t v;
   bool on;
 } rgbled;
+
+enum ValueMode {
+  DECREASE = 0,
+  INCREASE = 1
+};
 
 /* RGB functions */
 void init_leds(void);
@@ -31,6 +37,11 @@ void turn_off_all_leds(void);
 void fade_leds_out(void);
 void fade_leds_in(void);
 void set_leds(void);
+void set_leds_saturation(uint8_t sat);
+void set_leds_value(uint8_t val);
+void change_leds_hue(enum ValueMode mode);
+void change_leds_saturation(enum ValueMode mode);
+void change_leds_value(enum ValueMode mode);
 
 /* called from qmk functions */
 void process_leds(keyrecord_t* record);
@@ -39,3 +50,4 @@ void process_reactive_toggle(void);
 void process_reactive_fade(void);
 void process_reactive_all(void);
 void process_rgb_toggle(void);
+void process_rgb_white(void);

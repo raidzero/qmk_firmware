@@ -87,6 +87,18 @@ void process_rgb_toggle() {
   flip_rgb_bit(RGB_WAS_ENABLED);
 }
 
+void process_rgb_white() {
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+
+    led->s = 0;
+    led->v = 255;
+  }
+
+  rgblight_config.sat = 0;
+  rgblight_config.val = 255;
+}
+
 void light_led_in_color(uint8_t index, int hue) {
   rgbled* led = &rgbs[index];
 
@@ -218,4 +230,95 @@ void flip_rgb_bit(uint8_t bit) {
   } else {
     flip_rgb_bit_on(bit);
   }
+}
+
+bool is_rgb_bit_on(uint8_t bit) {
+  return RGB_FLAGS & bit;
+}
+
+void set_leds_saturation(uint8_t sat) {
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+    led->s = sat;
+  }
+
+  rgblight_config.sat = sat;
+}
+
+void set_leds_value(uint8_t val) {
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+    led->v = val;
+  }
+
+  rgblight_config.val = val;
+}
+
+void change_leds_saturation(enum ValueMode mode) {
+  uint8_t sat = rgblight_config.sat;
+
+  if (mode == INCREASE) {
+    if (sat <= 255 - RGBLIGHT_VAL_STEP) {
+      sat += RGBLIGHT_SAT_STEP;
+    } else {
+      sat = 255;
+    }
+  } else {
+    if (sat >= RGBLIGHT_SAT_STEP) {
+      sat -= RGBLIGHT_SAT_STEP;
+    } else {
+      sat = 0;
+    }
+  }
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+    led->s = sat;
+  }
+
+  rgblight_config.sat = sat;
+}
+
+void change_leds_value(enum ValueMode mode) {
+  uint8_t val = rgblight_config.val;
+
+  if (mode == INCREASE) {
+    if (val <= 255 - RGBLIGHT_VAL_STEP) {
+      val += RGBLIGHT_VAL_STEP;
+    } else {
+      val = 255;
+    }
+  } else {
+    if (val >= RGBLIGHT_VAL_STEP) {
+      val -= RGBLIGHT_VAL_STEP;
+    } else {
+      val = 0;
+    }
+  }
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+    led->v = val;
+  }
+
+  rgblight_config.val = val;
+}
+
+void change_leds_hue(enum ValueMode mode) {
+  int hue = rgblight_config.hue;
+
+  if (mode == INCREASE) {
+    hue = hue + RGBLIGHT_HUE_STEP % 360;
+  } else {
+    if (hue >= RGBLIGHT_HUE_STEP) {
+      hue -= RGBLIGHT_HUE_STEP;
+    } else {
+      hue = 360 - RGBLIGHT_HUE_STEP;
+    }
+  }
+
+  for (uint8_t i = 0; i < RGBLED_NUM; i++) {
+    rgbled* led = &rgbs[i];
+    led->h = hue;
+  }
+
+  rgblight_config.hue = hue;
 }

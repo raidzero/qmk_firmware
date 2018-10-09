@@ -29,6 +29,7 @@ enum my_keycodes {
   RGB_RCT = SAFE_RANGE, // toggle RGB reactive mode
   RGB_FAD,              // toggle RGB reactive fadeout
   RGB_ALL,              // toggle RGB lighting all LEDs
+  RGB_WHT,              // drop all LEDs saturation to 0, value to max (white)
   ANI_STA,               // animation: static color
   ANI_BRE,              // animation: breathe
   ANI_SPC,              // animation: spectrum
@@ -45,3 +46,5 @@ enum my_keycodes {
 void flip_state_bit_on(uint8_t bit);
 void flip_state_bit_off(uint8_t bit);
 void flip_state_bit(uint8_t bit);
+
+bool is_lighting_key(uint16_t keycode);

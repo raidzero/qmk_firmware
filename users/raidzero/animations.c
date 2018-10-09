@@ -26,6 +26,13 @@ void speed_decrease() {
 }
 
 void animation_mode(uint8_t newMode) {
+  if ((newMode <= ANIMATION_MODE_SPECTRUM && newMode >= ANIMATION_MODE_RAINBOW)
+    || newMode == ANIMATION_MODE_STATIC) {
+    // if spectrum or rainbow or static, max out sat & val for all leds, in case they were down
+    set_leds_saturation(255);
+    set_leds_value(255);
+  }
+
   mode = newMode;
 }
 
@@ -52,7 +59,7 @@ void scan_animation() {
   }
 }
 
-// just set all LEDs to whatever rgblight_config holds
+// do nothing
 void animation_step_static() {
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
     rgbled* led = &rgbs[i];
@@ -70,6 +77,8 @@ void animation_step_breathe() {
     rgbled* led = &rgbs[i];
 
     led->v = (uint8_t) val;
+    led->s = rgblight_config.sat;
+    led->h = rgblight_config.hue;
   }
 }
 
@@ -101,4 +110,3 @@ void animation_step_rainbow() {
   // increment currentHue
   currentHue = (currentHue + 1) % 360;
 }
-

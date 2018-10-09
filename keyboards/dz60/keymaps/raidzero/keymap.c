@@ -15,21 +15,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LSFT, x_____x, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_RSFT, x_____x,     \
     KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,  KC_SPC,  KC_SPC ,                   MO(1),   KC_LEFT, KC_DOWN, KC_UP,    KC_RIGHT),
 
-/* 1: Fn layer */
+/* 1: Fn layer (FN1) */
   LAYOUT(
     KC_GRV,  KC_F1,   KC_F2,    KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  x_____x,  KC_DEL, \
-    x_____x, ANI_STA, ANI_BRE,  ANI_SPC, ANI_RNB, x_____x, x_____x, x_____x, x_____x, x_____x, KC_PSCR, KC_SLCK, KC_PAUS, x_____x,       \
-    KC_CAPS, RGB_RCT, x_____x,  x_____x, RGB_FAD, RGB_ALL, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, x_____x,       \
-    _______, _______, _______,  RGB_TOG, MPR,     MPP,     MPN,     VUP,     VDN,     BL_DEC,  BL_TOGG, BL_INC,  x_____x, x_____x, \
-    _______, _______, _______,  x_____x, x_____x, x_____x,                   x_____x, ANI_SPD, x_____x, x_____x, ANI_SPI),
+    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, KC_PSCR, KC_SLCK, KC_PAUS, x_____x,       \
+    KC_CAPS, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, TO(2),       \
+    _______, _______, MPR,      MPP,     MPN,     x_____x, x_____x, x_____x, x_____x, VDN,     VUP,     x_____x, x_____x, x_____x, \
+    _______, _______, _______,  x_____x, x_____x, x_____x,                   x_____x, x_____x, x_____x, x_____x, x_____x),
 
-/* 2: Lighting layer (unused) */
+/* 2: Lighting layer (FN2) */
+// ESC to go back to default layer
   LAYOUT(
-    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,  x_____x, \
-    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
-    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
-    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, \
-    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x,                   x_____x, x_____x, x_____x, x_____x, x_____x),
+    TO(0),   x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, RGB_WHT, ANI_SPD, ANI_SPI, x_____x,  x_____x, \
+    x_____x, ANI_STA, ANI_BRE,  ANI_SPC, ANI_RNB, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    x_____x, RGB_RCT, x_____x,  x_____x, RGB_FAD, RGB_ALL, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    x_____x, x_____x, RGB_TOG,  RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, x_____x, x_____x, x_____x, x_____x, x_____x, \
+    x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x,                   x_____x, x_____x, BL_DEC,  BL_TOGG, BL_INC),
 
 };
 
@@ -63,8 +64,12 @@ void matrix_scan_user(void) {
 /* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-  // make leds do cool stuff when a key is hit
-  process_leds(record);
+  // if reactive, do not react when lighting keys are used
+  if (is_rgb_bit_on(RGB_REACTIVE_ENABLED)) {
+    if(!is_lighting_key(keycode)) {
+      process_leds(record);
+    }
+  }
 
   switch (keycode) {
     case KC_MINS: // RESET EEPROM
@@ -106,6 +111,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         process_rgb_toggle();
       }
       return true;
+    case RGB_WHT:
+      if (record->event.pressed) {
+        animation_mode(ANIMATION_MODE_STATIC);
+        process_rgb_white();
+      }
+      return true;
     case ANI_SPI:
       if (record->event.pressed) {
         speed_increase();
@@ -141,9 +152,55 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
       break;
+    case RGB_VAI:
+      if (record->event.pressed) {
+        change_leds_value(INCREASE);
+        return false;
+      }
+      break;
+     case RGB_VAD:
+      if (record->event.pressed) {
+        change_leds_value(DECREASE);
+        return true;
+      }
+      break;
+    case RGB_SAI:
+      if (record->event.pressed) {
+        change_leds_saturation(INCREASE);
+        return true;
+      }
+      break;
+     case RGB_SAD:
+      if (record->event.pressed) {
+        change_leds_saturation(DECREASE);
+        return true;
+      }
+      break;
+    case RGB_HUI:
+      if (record->event.pressed) {
+        change_leds_hue(INCREASE);
+        return true;
+      }
+      break;
+     case RGB_HUD:
+      if (record->event.pressed) {
+        change_leds_hue(DECREASE);
+        return true;
+      }
+      break;
   }
 
   return true;
+}
+
+bool is_lighting_key(uint16_t keycode) {
+  return
+    /* QMK RGB code */
+    (keycode >= RGB_HUI && keycode <= RGB_VAD)
+    /* QMK backlight code */
+    || (keycode >= BL_ON && keycode <= BL_BRTG)
+    /* one of my rgb mode codes */
+    || (keycode >= ANI_STA && keycode <= ANI_SPD);
 }
 
 void flip_state_bit(uint8_t bit) {
