@@ -28,6 +28,9 @@ enum ValueMode {
   INCREASE = 1
 };
 
+/* EEPROM location of RGB flags */
+#define RGB_EEPROM_BYTE (uint8_t*) 22
+
 /* RGB functions */
 void init_leds(void);
 void light_all_leds(int hue);

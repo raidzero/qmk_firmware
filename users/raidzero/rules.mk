@@ -1,1 +1,1 @@
-SRC += animations.c underglow.c
+SRC += animations.c underglow.c raidzero.c

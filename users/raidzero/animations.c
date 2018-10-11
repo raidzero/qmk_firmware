@@ -13,6 +13,10 @@ extern rgbled rgbs[RGBLED_NUM];
 extern uint8_t RGB_FLAGS;
 extern rgblight_config_t rgblight_config;
 
+void init_animation() {
+  mode = eeprom_read_byte(ANIM_EEPROM_BYTE);
+}
+
 void speed_increase() {
   if (anim_speed > 1) {
     anim_speed -= 1;
@@ -27,13 +31,14 @@ void speed_decrease() {
 
 void animation_mode(uint8_t newMode) {
   if ((newMode <= ANIMATION_MODE_SPECTRUM && newMode >= ANIMATION_MODE_RAINBOW)
-    || newMode == ANIMATION_MODE_STATIC) {
+    || newMode == ANIMATION_MODE_STATIC || newMode == ANIMATION_MODE_SWIRL) {
     // if spectrum or rainbow or static, max out sat & val for all leds, in case they were down
     set_leds_saturation(255);
     set_leds_value(255);
   }
 
   mode = newMode;
+  eeprom_update_byte(ANIM_EEPROM_BYTE, mode);
 }
 
 void scan_animation() {
@@ -53,6 +58,9 @@ void scan_animation() {
           break;
         case ANIMATION_MODE_RAINBOW:
           animation_step_rainbow();
+          break;
+        case ANIMATION_MODE_SWIRL:
+          animation_step_swirl();
           break;
       }
     }
@@ -109,4 +117,24 @@ void animation_step_rainbow() {
 
   // increment currentHue
   currentHue = (currentHue + 1) % 360;
+}
+
+int active_led = 0;
+
+void animation_step_swirl() {
+  // turn off all other leds
+  for (int i = 0; i < RGBLED_NUM; i++) {
+    if (i != active_led) {
+      rgbled* led = &rgbs[i];
+      led->v = 0;
+    }
+  }
+
+  // if the last led has been activated, start over for the next iteration
+  if (active_led++ >= RGBLED_NUM) {
+    active_led = 0;
+  }
+
+  rgbled* led = &rgbs[active_led];
+  led->v = 255;
 }

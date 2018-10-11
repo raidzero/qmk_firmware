@@ -4,7 +4,8 @@
 extern rgblight_config_t rgblight_config;
 
 // this controls all the reactive rgb bools
-uint8_t RGB_FLAGS =  RGB_WAS_ENABLED | LIGHT_ALL_LEDS | RGB_FADE_OUT;
+//uint8_t RGB_FLAGS = RGB_WAS_ENABLED | LIGHT_ALL_LEDS | RGB_FADE_OUT;
+uint8_t RGB_FLAGS = RGB_WAS_ENABLED | RGB_REACTIVE_ENABLED | LIGHT_ALL_LEDS | RGB_FADE_OUT;
 
 // a place to keep references to all the RGB LEDs
 rgbled rgbs[RGBLED_NUM];
@@ -18,6 +19,9 @@ uint8_t fade_speed = 10; // 20ms steps for fading LEDs in & out
 uint8_t orig_rgb_mode = 0;
 
 void init_leds() {
+  // read RGB_FLAGS from eeprom
+  //RGB_FLAGS = eeprom_read_byte(RGB_EEPROM_BYTE);
+
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
     rgbled* led = &rgbs[i];
 
@@ -124,7 +128,7 @@ void light_all_leds(int hue) {
 // sets all led values to 0
 void turn_off_all_leds(void) {
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
-    rgbled* led = & rgbs[i];
+    rgbled* led = &rgbs[i];
 
     led->v = 0;
   }
@@ -208,9 +212,7 @@ void set_leds(void) {
   for (uint8_t i = 0; i < RGBLED_NUM; i++) {
     rgbled* led = &rgbs[i];
 
-    if (led->v > 0) {
-      rgblight_sethsv_at(led->h, led->s, led->v, i);
-    }
+    rgblight_sethsv_at(led->h, led->s, led->v, i);
   }
 }
 
