@@ -27,3 +27,7 @@
 #endif
 
 #endif
+
+#define RGB_ROW_SIZE 5
+#define RGB_ROW_1 { 7, 6, 5, 4, 3 }
+#define RGB_ROW_2 { 8, 9, 0, 1, 2 }
