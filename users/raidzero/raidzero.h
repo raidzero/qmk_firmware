@@ -35,6 +35,7 @@ enum my_keycodes {
   ANI_SPC,              // animation: spectrum
   ANI_RNB,              // animation: rainbow
   ANI_SWI,              // animation: swirl
+  ANI_PUL,              // animation: pulse
   ANI_SPI,              // increase animation speed
   ANI_SPD,              // decreae animation speed
   KC_LOCK,              // toggle locked keyboard mode

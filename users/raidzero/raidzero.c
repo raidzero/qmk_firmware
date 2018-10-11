@@ -108,6 +108,11 @@ bool process_key_rz(uint16_t keycode, keyrecord_t* record) {
         return false;
       }
       break;
+    case ANI_PUL:
+      if (record->event.pressed) {
+        animation_mode(ANIMATION_MODE_PULSE);
+        return false;
+      }
     case RGB_VAI:
       if (record->event.pressed) {
         change_leds_value(INCREASE);

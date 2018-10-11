@@ -27,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // ESC to go back to default layer
   LAYOUT(
     TO(0),   x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, RGB_WHT, ANI_SPD, ANI_SPI, x_____x,  x_____x, \
-    x_____x, ANI_STA, ANI_BRE,  ANI_SPC, ANI_RNB, ANI_SWI, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    x_____x, ANI_STA, ANI_BRE,  ANI_SPC, ANI_RNB, ANI_SWI, ANI_PUL, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
     x_____x, RGB_RCT, x_____x,  x_____x, RGB_FAD, RGB_ALL, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
     x_____x, x_____x, RGB_TOG,  RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, x_____x, x_____x, x_____x, x_____x, x_____x, \
     x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x,                   x_____x, x_____x, BL_DEC,  BL_TOGG, BL_INC),
@@ -39,7 +39,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 uint8_t STATE_FLAGS = 0;
 
 void matrix_init_user(void) {
-
   //breathing_disable();
 
   // if backlight was off, turn it on. (otherwise just leave it as it was)

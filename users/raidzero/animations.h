@@ -7,6 +7,7 @@
 #define ANIMATION_MODE_SPECTRUM (1 << 2)
 #define ANIMATION_MODE_RAINBOW  (1 << 3)
 #define ANIMATION_MODE_SWIRL    (1 << 4)
+#define ANIMATION_MODE_PULSE    (1 << 5)
 
 #define BREATHE_STEPS 5
 
@@ -22,6 +23,7 @@ void animation_step_breathe(void);
 void animation_step_spectrum(void);
 void animation_step_rainbow(void);
 void animation_step_swirl(void);
+void animation_step_pulse(void);
 
 void speed_increase(void);
 void speed_decrease(void);

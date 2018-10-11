@@ -33,7 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* 3: lighting layer (FN1) */
   LAYOUT(
     x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, RGB_WHT, ANI_SPD, ANI_SPI, x_____x, x_____x, \
-    x_____x, ANI_STA, ANI_BRE, ANI_SPC, ANI_RNB, ANI_SWI, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
+    x_____x, ANI_STA, ANI_BRE, ANI_SPC, ANI_RNB, ANI_SWI, ANI_PUL, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x,       \
     _______, RGB_RCT, RGB_VAI, RGB_VAD, RGB_FAD, RGB_ALL, x_____x, x_____x, x_____x, KC_LOCK, x_____x, x_____x, x_____x, x_____x,       \
     _______, x_____x, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, BL_BRTG, BL_DEC,  BL_TOGG, BL_INC,           _______, x_____x, \
     _______, _______, _______,                   x_____x,                   _______, x_____x, x_____x, _______),

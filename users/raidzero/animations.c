@@ -1,9 +1,11 @@
 #include "animations.h"
 #include "underglow.h"
+#include "keymap.h"
+#include <print.h>
 
 uint8_t mode = ANIMATION_MODE_STATIC;
 
-uint16_t anim_speed = 20; // time to wait between steps of the animation
+uint16_t anim_speed = 40; // time to wait between steps of the animation
 
 uint16_t currentHue = 0;
 
@@ -61,6 +63,9 @@ void scan_animation() {
           break;
         case ANIMATION_MODE_SWIRL:
           animation_step_swirl();
+          break;
+        case ANIMATION_MODE_PULSE:
+          animation_step_pulse();
           break;
       }
     }
@@ -137,4 +142,57 @@ void animation_step_swirl() {
 
   rgbled* led = &rgbs[active_led];
   led->v = 255;
+}
+
+uint8_t row1[] = RGB_ROW_1;
+uint8_t row2[] = RGB_ROW_2;
+
+// left and right directions
+short right_index = RGB_ROW_SIZE / 2;
+#if RGB_ROW_SIZE % 2 == 0
+short left_index = RGB_ROW_SIZE / 2 - 1;
+#else
+short left_index = RGB_ROW_SIZE / 2;
+#endif
+
+void animation_step_pulse() {
+  /*
+  turn_off_all_leds();
+
+  rgbled* led = &rgbs[8];
+  led->v = 255;
+  */
+  for (int i = 0; i < RGB_ROW_SIZE; i++) {
+    if (i != right_index && i != left_index) {
+      rgbled* led1 = &rgbs[row1[i]];
+      rgbled* led2 = &rgbs[row2[i]];
+      led1->v = 0;
+      led2->v = 0;
+    }
+  }
+
+  // turn on active column leds:
+  // moves to the right:
+  rgbled* led1 = &rgbs[row1[right_index]];
+  rgbled* led2 = &rgbs[row2[right_index++]];
+  led1->v = 255;
+  led2->v = 255;
+
+  // moves to the left:
+  rgbled* led3 = &rgbs[row1[left_index]];
+  rgbled* led4 = &rgbs[row2[left_index--]];
+  led3->v = 255;
+  led4->v = 255;
+
+  if (right_index > RGB_ROW_SIZE - 1) {
+    right_index = RGB_ROW_SIZE / 2;
+  }
+
+  if (left_index < 0) {
+    #if RGB_ROW_SIZE % 2 == 0
+    left_index = RGB_ROW_SIZE / 2 - 1;
+    #else
+    left_index = RGB_ROW_SIZE / 2;
+    #endif
+  }
 }

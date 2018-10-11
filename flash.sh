@@ -17,5 +17,10 @@ function ask() {
 	esac
 }
 
-ask $1
+if [ -z "$2" ]; then
+	ask $1
+else
+	dfu-programmer atmega32u4 erase
+	dfu-programmer atmega32u4 flash $1
+fi
 

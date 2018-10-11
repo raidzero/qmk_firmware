@@ -49,3 +49,7 @@
 #define RGBLIGHT_VAL_STEP 8
 
 #endif
+
+#define RGB_ROW_SIZE 8
+#define RGB_ROW_1 { 0,  1,  2,  3,  4,  5,  6, 7 }
+#define RGB_ROW_2 { 15, 14, 13, 12, 11, 10, 9, 8 }
