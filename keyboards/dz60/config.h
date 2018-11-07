@@ -28,7 +28,7 @@
 #define BACKLIGHT_LEVELS 5
 
 /* Set 0 if debouncing isn't needed */
-#define DEBOUNCING_DELAY 5
+#define DEBOUNCING_DELAY 0
 
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
 #define LOCKING_SUPPORT_ENABLE
@@ -53,3 +53,7 @@
 #define RGB_ROW_SIZE 8
 #define RGB_ROW_1 { 0,  1,  2,  3,  4,  5,  6, 7 }
 #define RGB_ROW_2 { 15, 14, 13, 12, 11, 10, 9, 8 }
+
+#define GRAVE_ESC_ALT_OVERRIDE
+#define GRAVE_ESC_CTRL_OVERRIDE
+#define GRAVE_ESC_GUI_OVERRIDE

@@ -1,6 +1,7 @@
 #include "animations.h"
 #include "underglow.h"
 #include "keymap.h"
+#include "eeprom.h"
 #include <print.h>
 
 uint8_t mode = ANIMATION_MODE_STATIC;
@@ -144,6 +145,7 @@ void animation_step_swirl() {
   led->v = 255;
 }
 
+#ifdef RGB_ROW_SIZE
 uint8_t row1[] = RGB_ROW_1;
 uint8_t row2[] = RGB_ROW_2;
 
@@ -154,8 +156,9 @@ short left_index = RGB_ROW_SIZE / 2 - 1;
 #else
 short left_index = RGB_ROW_SIZE / 2;
 #endif
-
+#endif
 void animation_step_pulse() {
+  #ifdef RGB_ROW_SIZE
   /*
   turn_off_all_leds();
 
@@ -168,21 +171,33 @@ void animation_step_pulse() {
       rgbled* led2 = &rgbs[row2[i]];
       led1->v = 0;
       led2->v = 0;
+
+      // saturation back up
+      //led1->s = 255;
+      //led2->s = 255;
     }
   }
 
   // turn on active column leds:
   // moves to the right:
   rgbled* led1 = &rgbs[row1[right_index]];
-  rgbled* led2 = &rgbs[row2[right_index++]];
+  rgbled* led2 = &rgbs[row2[right_index]];
   led1->v = 255;
   led2->v = 255;
 
   // moves to the left:
   rgbled* led3 = &rgbs[row1[left_index]];
-  rgbled* led4 = &rgbs[row2[left_index--]];
+  rgbled* led4 = &rgbs[row2[left_index]];
   led3->v = 255;
   led4->v = 255;
+
+  // saturation
+  //led1->s /= left_index;
+  //led2->s /= left_index;
+  //led3->s /= left_index;
+  //led4->s /= left_index;
+
+  left_index--; right_index++;
 
   if (right_index > RGB_ROW_SIZE - 1) {
     right_index = RGB_ROW_SIZE / 2;
@@ -195,4 +210,5 @@ void animation_step_pulse() {
     left_index = RGB_ROW_SIZE / 2;
     #endif
   }
+  #endif
 }

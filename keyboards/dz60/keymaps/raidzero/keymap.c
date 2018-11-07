@@ -6,6 +6,10 @@
 
 extern rgblight_config_t rgblight_config;
 
+// helpers
+#define SCLN  LT(1, KC_SCLN)
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* 0: ANSI qwerty */
   LAYOUT(
@@ -19,7 +23,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   LAYOUT(
     KC_GRV,  KC_F1,   KC_F2,    KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  x_____x,  KC_DEL, \
     x_____x, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, KC_PSCR, KC_SLCK, KC_PAUS, x_____x,       \
-    KC_CAPS, x_____x, x_____x,  x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, x_____x, TO(2),       \
+    KC_CAPS, x_____x, x_____x,  x_____x, x_____x, x_____x, KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT,x_____x, x_____x, TO(2),       \
     _______, _______, MPR,      MPP,     MPN,     x_____x, x_____x, x_____x, x_____x, VDN,     VUP,     x_____x, x_____x, x_____x, \
     _______, _______, _______,  x_____x, x_____x, x_____x,                   x_____x, x_____x, x_____x, x_____x, x_____x),
 
@@ -62,7 +66,6 @@ void matrix_scan_user(void) {
   scan_leds();
 }
 
-/* handle special chords */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return process_key_rz(keycode, record);
 }
