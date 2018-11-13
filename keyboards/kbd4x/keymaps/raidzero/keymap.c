@@ -1,3 +1,24 @@
+/* blank layer
+ * ,-----------------------------------------------------------------------------------.
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      |      |      |      |      |             |      |      |      |      |      |
+ * `-----------------------------------------------------------------------------------'
+ */
+/*
+[_NAME] = LAYOUT_planck_mit(
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______
+)
+};
+*/
+
 /* Copyright 2018 sevenseacat
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,34 +43,24 @@
 #define _______ KC_TRNS
 #define xxxxxxx KC_NO
 
-/*
-  43 blues
-  33 w brown
-  3 b brown
-*/
-
 enum my_layers {
   _QWERTY,
   _LOWER,
   _RAISE,
   _OSWM,
-  _NAVIGATION
+  _NAVIGATION,
+  _NUMERIC,
+  _KEYBOARD
 };
 
 #define LOWER   TT(_LOWER)              // tap toggle lower
 #define RAISE   TT(_RAISE)              // tap toggle raise
-#define SPCFN   LT(_NAVIGATION, KC_SPC) // arrow keys
+#define NMBRS   TT(_NUMERIC)            // tap toggle numeric
+#define SPCFN   LT(_NUMERIC, KC_SPC)    // function keys, numpad
 #define OSLYR   MO(_OSWM)               // OS/WM layer
+#define KBLYR   TO(_KEYBOARD)           // toggle keyboard layer
 #define RSFTT   RSFT_T(KC_ENT)          // shift on hold, enter on tap
 #define TABW    LGUI_T(KC_TAB)          // win on hold, tab on tap
-
-// bracket mods - shifted ones do not work, unused
-#define LC_PO   LCTL_T(S(KC_9))         // left ctrl on hold, open paren on tap
-#define RC_PC   RCTL_T(KC_RPRN)         // right ctrl on hold, close paren on tap
-#define LW_BO   LGUI_T(KC_LBRC)         // left win on hold, open bracket on tap
-#define RW_BC   RGUI_T(KC_RBRC)         // right win on hold, close bracket on tap
-#define LA_BO   LALT_T(KC_LCBR)         // left alt on hold, open brace on tap
-#define RA_BC   RALT_T(KC_RCBR)         // right alt on hold, close brace on tap
 
 // i3 macros
 // workspaces
@@ -71,7 +82,7 @@ enum my_layers {
 #define DISP    SGUI(KC_D)              // monitor selection mode
 
 // macos helpers
-#define MSW     LGUI(KC_GRV)            // switch window
+#define MSW     LGUI(KC_GRV)            // switch window (show scratchpad on i3)
 #define PASTE   SGUI(LALT(KC_V))        // paste w/o formatting
 
 // Defines the keycodes used by our macros in process_record_user
@@ -89,7 +100,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |   ,  |   .  |   /  |Enter |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | WM/OS| Ctrl | Alt  | GUI  |Lower | Space / FN  |Raise | Left | Down |  Up  | Right|
+ * | WM/OS| Ctrl | Alt  | GUI  |Lower | Space / FN  | Raise| Left | Down |  Up  | Right|
  * `-----------------------------------------------------------------------------------'
  */
  [_QWERTY] = LAYOUT_planck_mit(
@@ -99,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     OSLYR,   KC_LCTL, KC_LGUI, KC_LALT, LOWER,   SPCFN,   RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
-/* Lower
+/* Lower - shifted characters on normal keyboard
  * ,-----------------------------------------------------------------------------------.
  * |   ~  |   !  |   @  |   #  |   $  |   %  |   ^  |   &  |   *  |   (  |   )  | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
@@ -117,7 +128,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, KC_MNXT,  KC_VOLD,  KC_VOLU, KC_MPLY
 ),
 
-/* Raise
+/* Raise - stuff that would not require modifiers on normal keyboards
+(minus a few exceptions to make it easier to do math)
  * ,-----------------------------------------------------------------------------------.
  * |   `  |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
@@ -125,32 +137,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |      |      |      |      |      |   /  |   +  |   .  |Pg Up |Pg Dn |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      | Next | Vol- | Vol+ | Play |
+ * |      |      |      |      | KBLYR|             |      | Next | Vol- | Vol+ | Play |
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_planck_mit(
     KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
     KC_DEL,  _______, _______, _______, _______, _______, KC_ASTR, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS,
     _______, _______, _______, _______, _______, _______, KC_SLSH, KC_PLUS, KC_DOT,  KC_PGUP, KC_PGDN, _______,
-    _______, _______, _______, _______, _______, _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
-),
-
-/* navigation layer / F keys
- * ,-----------------------------------------------------------------------------------.
- * |      |  F1  |  F2  |  F3  |  F4  |      |      |      |  UP  |      |      |      |
- * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |  F5  |  F6  |  F7  |  F8  |      |      | LEFT | DOWN`| RIGHT|      |      |
- * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |  F9  | F10  | F11  | F12  |      |      |      |      |      |      |      |
- * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      |      |      |      |      |
- * `-----------------------------------------------------------------------------------'
- */
-[_NAVIGATION] = LAYOUT_planck_mit(
-    xxxxxxx, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, xxxxxxx, KC_UP,   xxxxxxx, xxxxxxx, xxxxxxx,
-    xxxxxxx, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT,xxxxxxx, xxxxxxx,
-    xxxxxxx, KC_F9,   KC_F10,  KC_F11,  KC_F12,  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
-    xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx
+    _______, _______, _______, _______, KBLYR,   _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
 ),
 
 /* i3wm/macos
@@ -168,8 +162,45 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     MSW,     I31,     I32,     I33,     I34,     I35,     I36,     I37,     I38,     I39,     I30,     _______,
     _______, _______, _______, DISP,    _______, _______, _______, _______, _______, I3LM,    I3RM,    I3PWR,
     _______, _______, I3X,     _______, PASTE,   _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    _______, _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______
+),
+
+/* numeric layer
+ * ,-----------------------------------------------------------------------------------.
+ * |  F1  |  F2  | F3   |      |      |      |      |      |  7   |   8  |  9   |  *   |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * |  F4  |  F5  | F6   |      |      |      |      |      |  4   |   5  |  6   |  /   |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |  F7  |  F8  | F9   |      |      |      |      |      |  1   |   2  |  3   |  +   |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |  F10 | F11  | F12  |      |      |             |      |  0   |   .  |  =   |  -   |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_NUMERIC] = LAYOUT_planck_mit(
+    KC_F1,   KC_F2,   KC_F3,   _______, _______, _______, _______, _______, KC_7, KC_8, KC_9, KC_KP_ASTERISK,
+    KC_F4,   KC_F5,   KC_F6,   _______, _______, _______, _______, _______, KC_4, KC_5, KC_6, KC_KP_SLASH,
+    KC_F7,   KC_F8,   KC_F9,   _______, _______, _______, _______, _______, KC_1, KC_2, KC_3, KC_KP_PLUS,
+    KC_F10,  KC_F11,  KC_F12,  _______, _______, _______,          _______, KC_0, KC_DOT, KC_KP_EQUAL, KC_KP_MINUS
+),
+
+/* keyboard settings
+ * ,-----------------------------------------------------------------------------------.
+ * | TO 1 | STA  | BRE  | SPC  | RNB  |      |      |      | WHT  | SPD  | SPI  |      |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * |      | RCT  |      |      | FAD  | ALL  |      |      |      |      |      |      |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      | TOG  | HUI  | HUD  | SAI  | SAD  | VAI  | VAD  |      |      |      |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      |      |      |      |      |             |      |      |      |      |      |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_KEYBOARD] = LAYOUT_planck_mit(
+    TO(0),   ANI_STA, ANI_BRE, ANI_SPC, ANI_RNB, _______, _______, _______, RGB_WHT, ANI_SPD, ANI_SPI, _______,
+    _______, RGB_RCT, _______, _______, RGB_FAD, RGB_ALL, _______, _______, _______, _______, _______, _______,
+    _______, _______, RGB_TOG, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAI, RGB_VAI, RGB_VAD, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______
 )
+
 };
 
 // shift + shift + raise + k = bootloader
