@@ -88,6 +88,7 @@ enum my_layers {
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
   KBD4X = SAFE_RANGE,
+  TLDSL
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -98,34 +99,36 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * | Tab/W|   A  |   S  |   D  |   F  |   G  |   H  |   J  |   K  |   L  |   ;  |  "   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |   ,  |   .  |   /  |Enter |
+ * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |   ,  |   .  |  Up  | Shift|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | WM/OS| Ctrl | Alt  | GUI  |Lower | Space / FN  | Raise| Left | Down |  Up  | Right|
+ * | WM/OS| Ctrl | Alt  | GUI  |Lower | Space / FN  | Raise|   /  | Left | Down | Right|
  * `-----------------------------------------------------------------------------------'
  */
  [_QWERTY] = LAYOUT_planck_mit(
     KC_ESC,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
     TABW,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSFTT,
-    OSLYR,   KC_LCTL, KC_LGUI, KC_LALT, LOWER,   SPCFN,   RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    //KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSFTT,
+    //OSLYR,   KC_LCTL, KC_LALT, KC_LGUI, LOWER,   SPCFN,   RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_UP, RSFTT,
+    OSLYR,   KC_LCTL, KC_LALT, KC_LGUI, LOWER,   SPCFN,   RAISE,   KC_SLSH, KC_LEFT, KC_DOWN,   KC_RGHT
 ),
 
 /* Lower - shifted characters on normal keyboard
  * ,-----------------------------------------------------------------------------------.
  * |   ~  |   !  |   @  |   #  |   $  |   %  |   ^  |   &  |   *  |   (  |   )  | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | Del  |      |      |      |      |      |      |   _  |   +  |   {  |   }  |  |   |
+ * | Del  |      |      |      |  ~/  |      |      |   _  |   +  |   {  |   }  |  |   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |    | | Home | End  |      |
+ * |      |      |      |      |      |      |      |      |      |      |      | Enter|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      | Next | Vol- | Vol+ | Play |
+ * |      |      |      |      |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_planck_mit(
     KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR,  KC_ASTR,  KC_LPRN, KC_RPRN, KC_BSPC,
-    KC_DEL,  _______, _______, _______, _______, _______, _______, KC_UNDS,  KC_PLUS,  KC_LCBR, KC_RCBR, KC_PIPE,
-    _______, _______, _______, _______, _______, _______, _______, _______,  _______,  KC_HOME, KC_END,  _______,
-    _______, _______, _______, _______, _______, _______, _______, KC_MNXT,  KC_VOLD,  KC_VOLU, KC_MPLY
+    KC_DEL,  _______, _______, _______, TLDSL,   _______, _______, KC_UNDS,  KC_PLUS,  KC_LCBR, KC_RCBR, KC_PIPE,
+    _______, _______, _______, _______, _______, _______, _______, _______,  _______,  _______, _______, KC_ENTER,
+    _______, _______, _______, _______, _______, _______, _______, _______,  _______,  _______, _______
 ),
 
 /* Raise - stuff that would not require modifiers on normal keyboards
@@ -133,25 +136,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |   `  |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  | Bksp |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | Del  |      |      |      |      |      |   *  |   -  |   =  |   [  |   ]  |  \   |
+ * | Del  |      |      |      |      |      |      |   -  |   =  |   [  |   ]  |  \   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |   /  |   +  |   .  |Pg Up |Pg Dn |      |
+ * |      |      |      |      |      |      |      |   +  |      |      |      | Enter|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      | KBLYR|             |      | Next | Vol- | Vol+ | Play |
+ * |      |      |      |      | KBLYR|             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_planck_mit(
     KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
-    KC_DEL,  _______, _______, _______, _______, _______, KC_ASTR, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS,
-    _______, _______, _______, _______, _______, _______, KC_SLSH, KC_PLUS, KC_DOT,  KC_PGUP, KC_PGDN, _______,
-    _______, _______, _______, _______, KBLYR,   _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
+    KC_DEL,  _______, _______, _______, _______, _______, _______, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS,
+    _______, _______, _______, _______, _______, _______, _______, KC_PLUS, _______, _______, _______, KC_ENTER,
+    _______, _______, _______, _______, KBLYR,   _______, _______, _______, _______, _______, _______
 ),
 
 /* i3wm/macos
  * ,-----------------------------------------------------------------------------------.
- * |  MSW | ws1  | ws2  | ws3  | ws4  | ws5  | ws6  | ws7  | ws8  | ws9  | ws0  | ____ |
+ * |  MSW | ws1  | ws2  | ws3  | ws4  | ws5  | ws6  | ws7  | ws8  | ws9  | ws0  | prsc |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      | DISP |      |      |      |      |      | wslm | wsrm | power|
+ * | CAPS |      |      | DISP |      |      |      |      |      | wslm | wsrm | power|
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |______|      | I3X  |      |PASTE |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -159,28 +162,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_OSWM] = LAYOUT_planck_mit(
-    MSW,     I31,     I32,     I33,     I34,     I35,     I36,     I37,     I38,     I39,     I30,     _______,
-    _______, _______, _______, DISP,    _______, _______, _______, _______, _______, I3LM,    I3RM,    I3PWR,
+    MSW,     I31,     I32,     I33,     I34,     I35,     I36,     I37,     I38,     I39,     I30,     KC_PSCR,
+    KC_CAPS, _______, _______, DISP,    _______, _______, _______, _______, _______, I3LM,    I3RM,    I3PWR,
     _______, _______, I3X,     _______, PASTE,   _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______
 ),
 
-/* numeric layer
+/* numeric layer - and other helpful things
  * ,-----------------------------------------------------------------------------------.
- * |  F1  |  F2  | F3   |      |      |      |      |      |  7   |   8  |  9   |  *   |
+ * |  F1  |  F2  | F3   | F4   |      |      |      |      |  7   |   8  |  9   |  *   |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |  F4  |  F5  | F6   |      |      |      |      |      |  4   |   5  |  6   |  /   |
+ * |  F5  |  F6  | F7   | F8   |      |      |      |      |  4   |   5  |  6   |  /   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |  F7  |  F8  | F9   |      |      |      |      |      |  1   |   2  |  3   |  +   |
+ * |  F9  |  F10 | F11  | F12  |      |      |      |      |  1   |   2  |  3   |  +   |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |  F10 | F11  | F12  |      |      |             |      |  0   |   .  |  =   |  -   |
+ * | MPR  |  MPP | MPN  | VDN  | VUP  |             |      |  0   |   .  |  =   |  -   |
  * `-----------------------------------------------------------------------------------'
  */
 [_NUMERIC] = LAYOUT_planck_mit(
-    KC_F1,   KC_F2,   KC_F3,   _______, _______, _______, _______, _______, KC_7, KC_8, KC_9, KC_KP_ASTERISK,
-    KC_F4,   KC_F5,   KC_F6,   _______, _______, _______, _______, _______, KC_4, KC_5, KC_6, KC_KP_SLASH,
-    KC_F7,   KC_F8,   KC_F9,   _______, _______, _______, _______, _______, KC_1, KC_2, KC_3, KC_KP_PLUS,
-    KC_F10,  KC_F11,  KC_F12,  _______, _______, _______,          _______, KC_0, KC_DOT, KC_KP_EQUAL, KC_KP_MINUS
+    KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______, _______, _______, _______, KC_7, KC_8, KC_9, KC_KP_ASTERISK,
+    KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______, _______, _______, _______, KC_4, KC_5, KC_6, KC_KP_SLASH,
+    KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, _______, _______, _______, KC_1, KC_2, KC_3, KC_KP_PLUS,
+    MPR,     MPP,     MPN,     VDN,     VUP,     _______,          _______, KC_0, KC_DOT, KC_KP_EQUAL, KC_KP_MINUS
 ),
 
 /* keyboard settings
@@ -206,6 +209,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // shift + shift + raise + k = bootloader
 // shift + shift + raise + j = eeprom reset
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch(keycode) {
+    case TLDSL:
+      if (record->event.pressed) {
+        SEND_STRING("~/");
+        return false;
+      }
+  }
+
   return process_key_rz(keycode, record);
 }
 
